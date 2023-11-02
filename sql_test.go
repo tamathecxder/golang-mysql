@@ -222,3 +222,37 @@ func TestUserInsert(t *testing.T) {
 
 	fmt.Println("data has been saved successfully")
 }
+
+func TestSqlInjection(t *testing.T) {
+	db := GetConnection()
+	ctx := context.Background()
+
+	defer db.Close()
+
+	username := "User1"
+	password := "password1'; #"
+
+	query := "SELECT id, username, password FROM user WHERE username = '" + username + "'AND password = '" + password + "'LIMIT 1"
+
+	rows, err := db.QueryContext(ctx, query)
+
+	if err != nil {
+		panic(err)
+	}
+
+	if rows.Next() {
+		var id, resultUsername, resultPassword string
+
+		err := rows.Scan(&id, &resultUsername, &resultPassword)
+
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Println("Login berhasil")
+		fmt.Println("Id:", id)
+		fmt.Println("Username:", resultUsername)
+	} else {
+		fmt.Println("Login gagal")
+	}
+}
