@@ -8,6 +8,29 @@ import (
 	"time"
 )
 
+func TestCreateTable(t *testing.T) {
+	db := GetConnection()
+	ctx := context.Background()
+
+	defer db.Close()
+
+	createTableQuery := `
+		CREATE TABLE user (
+			id CHAR(36) PRIMARY KEY,
+			name VARCHAR(255),
+			password VARCHAR(100)
+		)
+	`
+
+	_, err := db.ExecContext(ctx, createTableQuery)
+
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("table has been successfully created")
+}
+
 func TestExecSql(t *testing.T) {
 	db := GetConnection()
 	ctx := context.Background()
