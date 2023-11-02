@@ -75,6 +75,7 @@ func TestQuerySql(t *testing.T) {
 			panic(err)
 		}
 
+		fmt.Println("========================")
 		fmt.Println("Id:", id)
 		fmt.Println("Name:", name)
 	}
@@ -110,6 +111,7 @@ func TestComplexQuery(t *testing.T) {
 			panic(err)
 		}
 
+		fmt.Println("========================")
 		fmt.Println("Id:", id)
 		fmt.Println("Name:", name)
 		fmt.Println("Email:", email)
@@ -153,7 +155,7 @@ func TestNullValue(t *testing.T) {
 			panic(err)
 		}
 
-		fmt.Println("=====================")
+		fmt.Println("========================")
 		fmt.Println("Id:", id)
 		fmt.Println("Name:", name)
 
