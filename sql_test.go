@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"testing"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 func TestCreateTable(t *testing.T) {
@@ -173,4 +175,43 @@ func TestNullValue(t *testing.T) {
 
 		fmt.Println("Created At:", createdAt)
 	}
+}
+
+func TestUserInsert(t *testing.T) {
+	db := GetConnection()
+	ctx := context.Background()
+	defer db.Close()
+
+	// Contoh data 3 pengguna
+	usersData := []struct {
+		id       string
+		name     string
+		password string
+	}{
+		{GenerateCustomUUID(), "User1", "password1"},
+		{GenerateCustomUUID(), "User2", "password2"},
+		{GenerateCustomUUID(), "User3", "password3"},
+	}
+
+	// Loop melalui data pengguna dan masukkan ke database
+	for _, userData := range usersData {
+		// Hash kata sandi menggunakan bcrypt
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userData.password), bcrypt.DefaultCost)
+		if err != nil {
+			t.Errorf("failed to hash password: %v", err)
+			continue
+		}
+
+		// Eksekusi pernyataan SQL untuk memasukkan pengguna ke database
+		insertQuery := `
+			INSERT INTO user (id, name, password) VALUES (?, ?, ?)
+		`
+
+		_, err = db.ExecContext(ctx, insertQuery, userData.id, userData.name, hashedPassword)
+		if err != nil {
+			t.Errorf("failed to insert user:: %v", err)
+		}
+	}
+
+	fmt.Println("data has been saved successfully")
 }
