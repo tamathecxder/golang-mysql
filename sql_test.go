@@ -2,6 +2,7 @@ package golang_mysql
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"testing"
 	"time"
@@ -91,6 +92,62 @@ func TestComplexQuery(t *testing.T) {
 		fmt.Println("Rating:", rating)
 		fmt.Println("Married:", married)
 		fmt.Println("Birth Date:", birthDate)
+		fmt.Println("Created At:", createdAt)
+	}
+}
+
+func TestNullValue(t *testing.T) {
+	db := GetConnection()
+	ctx := context.Background()
+
+	defer db.Close()
+
+	query := "SELECT id, name, email, balance, rating, birth_date, married, created_at FROM customer"
+	rows, err := db.QueryContext(ctx, query)
+
+	if err != nil {
+		panic(err)
+	}
+
+	defer rows.Close()
+
+	fmt.Println("Success: Query executed. Customer data retrieved.")
+
+	for rows.Next() {
+		var id, name string
+		var email sql.NullString
+		var balance int32
+		var rating float64
+		var married bool
+		var birthDate sql.NullTime
+		var createdAt time.Time
+
+		err := rows.Scan(&id, &name, &email, &balance, &rating, &birthDate, &married, &createdAt)
+
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Println("=====================")
+		fmt.Println("Id:", id)
+		fmt.Println("Name:", name)
+
+		if email.Valid {
+			fmt.Println("Email:", email.String)
+		} else {
+			fmt.Println("Email:", nil)
+		}
+
+		fmt.Println("Balance:", balance)
+		fmt.Println("Rating:", rating)
+		fmt.Println("Married:", married)
+
+		if birthDate.Valid {
+			fmt.Println("Birth Date:", birthDate.Time)
+		} else {
+			fmt.Println("Birth Date:", nil)
+		}
+
 		fmt.Println("Created At:", createdAt)
 	}
 }
