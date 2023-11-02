@@ -182,7 +182,6 @@ func TestUserInsert(t *testing.T) {
 	ctx := context.Background()
 	defer db.Close()
 
-	// Contoh data 3 pengguna
 	usersData := []struct {
 		id       string
 		name     string
@@ -193,16 +192,13 @@ func TestUserInsert(t *testing.T) {
 		{GenerateCustomUUID(), "User3", "password3"},
 	}
 
-	// Loop melalui data pengguna dan masukkan ke database
 	for _, userData := range usersData {
-		// Hash kata sandi menggunakan bcrypt
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userData.password), bcrypt.DefaultCost)
 		if err != nil {
 			t.Errorf("failed to hash password: %v", err)
 			continue
 		}
 
-		// Eksekusi pernyataan SQL untuk memasukkan pengguna ke database
 		insertQuery := `
 			INSERT INTO user (id, name, password) VALUES (?, ?, ?)
 		`
