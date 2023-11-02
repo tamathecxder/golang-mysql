@@ -195,10 +195,19 @@ func TestUserInsert(t *testing.T) {
 	}
 
 	for _, userData := range usersData {
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userData.password), bcrypt.DefaultCost)
-		if err != nil {
-			t.Errorf("failed to hash password: %v", err)
-			continue
+		var hashedPassword []byte
+		var err error
+
+		if userData.username == "User1" {
+			// Jika pengguna adalah "User1", kata sandi tidak di-hash
+			hashedPassword = []byte(userData.password)
+		} else {
+			// Selain "User1", hash kata sandi
+			hashedPassword, err = bcrypt.GenerateFromPassword([]byte(userData.password), bcrypt.DefaultCost)
+			if err != nil {
+				t.Errorf("failed to hash password: %v", err)
+				continue
+			}
 		}
 
 		insertQuery := `
@@ -207,32 +216,9 @@ func TestUserInsert(t *testing.T) {
 
 		_, err = db.ExecContext(ctx, insertQuery, userData.id, userData.username, hashedPassword)
 		if err != nil {
-			t.Errorf("failed to insert user:: %v", err)
+			t.Errorf("failed to insert user: %v", err)
 		}
 	}
 
 	fmt.Println("data has been saved successfully")
 }
-
-// func TestSqlInjection(t *testing.T) {
-// 	db := GetConnection()
-// 	ctx := context.Background()
-
-// 	defer db.Close()
-
-// 	username := "User1"
-
-// 	query := "SELECT id, name FROM user WHERE name = '" + username + "' LIMIT 1"
-
-// 	rows, err := db.QueryContext(ctx, query)
-
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	if rows.Next() {
-// 		var
-// 	}
-
-// 	fmt.Println("Success: Query executed. User data retrieved.")
-// }
