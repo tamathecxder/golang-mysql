@@ -19,7 +19,7 @@ func TestCreateTable(t *testing.T) {
 	createTableQuery := `
 		CREATE TABLE user (
 			id CHAR(36) PRIMARY KEY,
-			name VARCHAR(255),
+			username VARCHAR(255),
 			password VARCHAR(100)
 		)
 	`
@@ -186,7 +186,7 @@ func TestUserInsert(t *testing.T) {
 
 	usersData := []struct {
 		id       string
-		name     string
+		username string
 		password string
 	}{
 		{GenerateCustomUUID(), "User1", "password1"},
@@ -202,10 +202,10 @@ func TestUserInsert(t *testing.T) {
 		}
 
 		insertQuery := `
-			INSERT INTO user (id, name, password) VALUES (?, ?, ?)
+			INSERT INTO user (id, username, password) VALUES (?, ?, ?)
 		`
 
-		_, err = db.ExecContext(ctx, insertQuery, userData.id, userData.name, hashedPassword)
+		_, err = db.ExecContext(ctx, insertQuery, userData.id, userData.username, hashedPassword)
 		if err != nil {
 			t.Errorf("failed to insert user:: %v", err)
 		}
@@ -213,3 +213,26 @@ func TestUserInsert(t *testing.T) {
 
 	fmt.Println("data has been saved successfully")
 }
+
+// func TestSqlInjection(t *testing.T) {
+// 	db := GetConnection()
+// 	ctx := context.Background()
+
+// 	defer db.Close()
+
+// 	username := "User1"
+
+// 	query := "SELECT id, name FROM user WHERE name = '" + username + "' LIMIT 1"
+
+// 	rows, err := db.QueryContext(ctx, query)
+
+// 	if err != nil {
+// 		panic(err)
+// 	}
+
+// 	if rows.Next() {
+// 		var
+// 	}
+
+// 	fmt.Println("Success: Query executed. User data retrieved.")
+// }
