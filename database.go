@@ -14,7 +14,7 @@ import (
 // SetConnMaxLifetime sets the maximum lifespan of a connection. After this duration, a connection is closed and removed from the pool.
 
 func GetConnection() *sql.DB {
-	db, err := sql.Open("mysql", "root:@tcp(localhost:3306)/golang_test")
+	db, err := sql.Open("mysql", "root:@tcp(localhost:3306)/golang_test?parseTime=true")
 
 	if err != nil {
 		panic(err)
