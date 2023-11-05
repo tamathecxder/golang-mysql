@@ -256,3 +256,57 @@ func TestSqlInjection(t *testing.T) {
 		fmt.Println("Login gagal")
 	}
 }
+
+func TestSqlInjectionSafe(t *testing.T) {
+	db := GetConnection()
+	ctx := context.Background()
+
+	defer db.Close()
+
+	username := "User1"
+	password := "password1'; #"
+
+	query := "SELECT id, username, password FROM user WHERE username = ? AND password = ? LIMIT 1"
+
+	rows, err := db.QueryContext(ctx, query, username, password)
+
+	if err != nil {
+		panic(err)
+	}
+
+	if rows.Next() {
+		var id, resultUsername, resultPassword string
+
+		err := rows.Scan(&id, &resultUsername, &resultPassword)
+
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Println("Login berhasil")
+		fmt.Println("Id:", id)
+		fmt.Println("Username:", resultUsername)
+	} else {
+		fmt.Println("Login gagal")
+	}
+}
+
+func TestExecSqlSafe(t *testing.T) {
+	db := GetConnection()
+	ctx := context.Background()
+
+	defer db.Close()
+
+	id := "1"
+	username := "super_admin"
+	password := "admin123"
+
+	query := "INSERT INTO user(id, username, password) VALUES (?, ?, ?)"
+	_, err := db.ExecContext(ctx, query, id, username, password)
+
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Success: User data inserted")
+}
