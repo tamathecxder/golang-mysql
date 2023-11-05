@@ -310,3 +310,28 @@ func TestExecSqlSafe(t *testing.T) {
 
 	fmt.Println("Success: User data inserted")
 }
+
+func TestAutoIncrement(t *testing.T) {
+	db := GetConnection()
+	ctx := context.Background()
+
+	defer db.Close()
+
+	username := "test@gmail.com"
+	password := "test comment"
+
+	query := "INSERT INTO comments (email, comment) VALUES (?, ?)"
+	result, err := db.ExecContext(ctx, query, username, password)
+
+	if err != nil {
+		panic(err)
+	}
+
+	insertId, err := result.LastInsertId()
+
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Success: Comment data inserted with id", insertId)
+}
