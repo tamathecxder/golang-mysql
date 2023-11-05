@@ -42,3 +42,19 @@ func TestFindById(t *testing.T) {
 
 	fmt.Println(comment)
 }
+
+func TestFindAll(t *testing.T) {
+	commentRepository := NewCommentRepository(golang_mysql.GetConnection())
+
+	ctx := context.Background()
+
+	comments, err := commentRepository.FindAll(ctx)
+
+	if err != nil {
+		panic(err)
+	}
+
+	for _, comment := range comments {
+		fmt.Println(comment.Comment)
+	}
+}
