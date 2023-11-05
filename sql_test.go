@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strconv"
 	"testing"
 	"time"
 
@@ -334,4 +335,39 @@ func TestAutoIncrement(t *testing.T) {
 	}
 
 	fmt.Println("Success: Comment data inserted with id", insertId)
+}
+
+func TestPrepareStatement(t *testing.T) {
+	db := GetConnection()
+	ctx := context.Background()
+
+	defer db.Close()
+
+	insertQuery := "INSERT INTO comments (email, comment) VALUES (?, ?)"
+	statement, err := db.PrepareContext(ctx, insertQuery)
+
+	if err != nil {
+		panic(err)
+	}
+
+	for i := 0; i < 10; i++ {
+		username := "testing.mail" + strconv.Itoa(i) + "@gmail.com"
+		comment := "TESTING_COMMENT_NUMBER_" + strconv.Itoa(i)
+
+		result, err := statement.ExecContext(ctx, username, comment)
+
+		if err != nil {
+			panic(err)
+		}
+
+		lastId, err := result.LastInsertId()
+
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Println("Success: Comment data inserted with id", lastId)
+	}
+
+	defer statement.Close()
 }
