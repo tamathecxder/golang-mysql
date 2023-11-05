@@ -200,10 +200,8 @@ func TestUserInsert(t *testing.T) {
 		var err error
 
 		if userData.username == "User1" {
-			// Jika pengguna adalah "User1", kata sandi tidak di-hash
 			hashedPassword = []byte(userData.password)
 		} else {
-			// Selain "User1", hash kata sandi
 			hashedPassword, err = bcrypt.GenerateFromPassword([]byte(userData.password), bcrypt.DefaultCost)
 			if err != nil {
 				t.Errorf("failed to hash password: %v", err)
