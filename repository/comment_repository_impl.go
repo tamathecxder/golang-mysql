@@ -12,6 +12,10 @@ type commentRepositoryImpl struct {
 	DB *sql.DB
 }
 
+func NewCommentRepository(db *sql.DB) CommentRepository {
+	return &commentRepositoryImpl{DB: db}
+}
+
 func (repository *commentRepositoryImpl) Insert(ctx context.Context, comment entity.Comment) (entity.Comment, error) {
 	query := "INSERT INTO comments (email, comment) VALUES (?, ?)"
 
